@@ -1,18 +1,22 @@
-import React from 'react';
-import SideBar from './sidebar';
+import React from "react";
+import { BrowserRouter, Link } from "react-router-dom";
 
-import map from './assets/boroughs.png'
+import Map2 from "./components/Map";
+import Footer from "./components/Footer";
+import Dashboard from "./components/Dashboard";
+import Stepper from "./components/Stepper";
 
-
-import './App.css';
+import "./App.css";
+import NavBar from "./components/Navbar";
 
 export default function App() {
   return (
     <div id="App">
-      <SideBar />
       <div id="page-wrap">
-        <img src={map} alt="Map" />
-        <h1>New York City Accident Visualiser</h1>
+        <NavBar />
+        <Stepper />
+        <Map2 />
+        <Footer />
       </div>
     </div>
   );
