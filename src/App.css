@@ -13,57 +13,61 @@ body {
   overflow: auto;
 }
 
-.bm-item {
-  display: inline-block;
-  text-decoration: none;
-  margin-bottom: 10px;
-  color: #d1d1d1;
-  transition: color 0.2s;
-  font-size: xx-large;
+/* Footer Stye */
+.footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: #c1c9cc;
 }
 
-.bm-item:hover {
-  color: purple;
+/* Map styles */
+/* #Brooklyn {
+  fill: #c1c9cc !important;
 }
 
-.bm-burger-button {
-  position: fixed;
-  width: 36px;
-  height: 30px;
-  left: 36px;
-  top: 36px;
+#Staten_Island {
+  fill: #c1c9cc !important;
 }
 
-.bm-burger-bars {
-  /* background: #373a47; */
-  background: #000000;
+#Queens {
+  fill: #c1c9cc !important;
 }
 
-.bm-cross-button {
-  height: 24px;
-  width: 24px;
+#Manhattan {
+  fill: #c1c9cc !important;
 }
 
-.bm-cross {
-  background: #bdc3c7;
+#Brooklyn {
+  fill: #c1c9cc !important;
 }
 
-.bm-menu {
-  background: #000000;
-  /* background: #373a47; */
-  padding: 2.5em 1.5em 0;
-  font-size: 1.15em;
+#Bronx {
+  fill: #c1c9cc !important;
+} */
+
+#Staten_Island:hover {
+  fill: lightgreen !important;
+  transition: all ease 0.3s;
 }
 
-.bm-morph-shape {
-  /* fill: #373a47; */
-  fill: #000000;
+#Queens:hover {
+  fill: lightgreen !important;
+  transition: all ease 0.3s;
 }
 
-.bm-item-list {
-  color: #b8b7ad;
+#Manhattan:hover {
+  fill: lightgreen !important;
+  transition: all ease 0.3s;
 }
 
-.bm-overlay {
-  background: rgba(0, 0, 0, 0.3);
+#Brooklyn:hover {
+  fill: lightgreen !important;
+  transition: all ease 0.3s;
+}
+
+#Bronx:hover {
+  fill: lightgreen !important;
+  transition: all ease 0.3s;
 }
