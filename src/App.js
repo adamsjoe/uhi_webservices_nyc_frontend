@@ -1,22 +1,34 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+
+import "bootstrap/dist/css/bootstrap.css";
 import { BrowserRouter, Link } from "react-router-dom";
 
-import Map2 from "./components/Map";
-import Footer from "./components/Footer";
-import Dashboard from "./components/Dashboard";
-import Stepper from "./components/Stepper";
-
 import "./App.css";
-import NavBar from "./components/Navbar";
 
 export default function App() {
+  const [boroughs, setBoroughs] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:4000/historic/boroughs", {
+      method: "GET",
+      mode: "no-cors",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setBoroughs(data);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }, []);
+
   return (
-    <div id="App">
-      <div id="page-wrap">
-        <NavBar />
-        <Stepper />
-        <Map2 />
-        <Footer />
+    <div className="container">
+      New York City Accident Visualiser
+      <div className="row">
+        <div className="col-md-4">Select a borough from the list below:</div>
+        <div className="col-md-8">DATA</div>
       </div>
     </div>
   );
