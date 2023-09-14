@@ -1,12 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap");
+
 html,
 body {
+  font-family: "Roboto", sans-serif;
   margin: 0;
+  background-color: #f5f5f5;
 }
 
-#App {
-  font-family: sans-serif;
-  height: 100vh;
+.heading {
+  font-size: xx-large;
+  color: #333333;
 }
+
+.boroughSelector {
+  background-color: #f5f5f5;
+  color: #333333;
+}
+
+.boroughSelector option {
+  text-transform: lowercase;
+}
+
+/* .boroughSelector option::first-letter {
+  text-transform: uppercase;
+} */
 
 #page-wrap {
   text-align: center;
@@ -20,54 +37,4 @@ body {
   bottom: 0;
   right: 0;
   background-color: #c1c9cc;
-}
-
-/* Map styles */
-/* #Brooklyn {
-  fill: #c1c9cc !important;
-}
-
-#Staten_Island {
-  fill: #c1c9cc !important;
-}
-
-#Queens {
-  fill: #c1c9cc !important;
-}
-
-#Manhattan {
-  fill: #c1c9cc !important;
-}
-
-#Brooklyn {
-  fill: #c1c9cc !important;
-}
-
-#Bronx {
-  fill: #c1c9cc !important;
-} */
-
-#Staten_Island:hover {
-  fill: lightgreen !important;
-  transition: all ease 0.3s;
-}
-
-#Queens:hover {
-  fill: lightgreen !important;
-  transition: all ease 0.3s;
-}
-
-#Manhattan:hover {
-  fill: lightgreen !important;
-  transition: all ease 0.3s;
-}
-
-#Brooklyn:hover {
-  fill: lightgreen !important;
-  transition: all ease 0.3s;
-}
-
-#Bronx:hover {
-  fill: lightgreen !important;
-  transition: all ease 0.3s;
 }
