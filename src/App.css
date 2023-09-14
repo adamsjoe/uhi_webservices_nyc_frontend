@@ -17,12 +17,17 @@ body {
   color: #333333;
 }
 
-.boroughSelector option {
+.boroughSelector {
+  background-color: #f5f5f5;
+  color: #333333;
+}
+
+/* .boroughSelector option {
   text-transform: lowercase;
 }
 
-/* .boroughSelector option::first-letter {
-  text-transform: uppercase;
+.boroughSelector option::first-letter {
+  text-transform: capitalize;
 } */
 
 #page-wrap {
