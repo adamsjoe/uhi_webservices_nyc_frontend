@@ -6,6 +6,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import axios from "axios";
 
 import "./App.css";
+import PieChart from "./components/PieChart";
 
 const baseAPIURL = "http://localhost:4000";
 
@@ -118,7 +119,14 @@ export default function App() {
 
         <div className="col-md-10">
           {chosenBorough !== "NULL" && summaryData !== null ? (
-            <BarChart data={summaryData} />
+            <>
+              <div id="summaryBorough">
+                <BarChart data={summaryData} />
+              </div>
+              <div id="fatalitiesPie">
+                <PieChart data={summaryData} />
+              </div>
+            </>
           ) : (
             <p>PLACEHOLDER</p>
           )}

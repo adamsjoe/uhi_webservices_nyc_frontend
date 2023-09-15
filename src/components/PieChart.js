@@ -1,5 +1,8 @@
-import React, { useEffect, useRef } from "react";
-import Chart from "chart.js/auto";
+import React from "react";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Pie } from "react-chartjs-2";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 function calculateInjuriesAndFatalities(data) {
   let totalInjuries = 0;
@@ -16,31 +19,23 @@ function calculateInjuriesAndFatalities(data) {
 }
 
 const PieChart = ({ data }) => {
-  const chartRef = useRef(null);
+  const { totalInjuries, totalFatalities } =
+    calculateInjuriesAndFatalities(data);
 
-  useEffect(() => {
-    const ctx = chartRef.current.getContext("2d");
+  const chartData = {
+    labels: ["Fatalities", "Injuries"],
+    datasets: [
+      {
+        label: "No. of victims",
+        data: [totalFatalities, totalInjuries],
+        backgroundColor: ["rgba(255, 99, 132, 0.2)", "rgba(54, 162, 235, 0.2)"],
+        borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)"],
+        borderWidth: 1,
+      },
+    ],
+  };
 
-    const { totalInjuries, totalFatalities } =
-      calculateInjuriesAndFatalities(data);
-
-    const pieData = {
-      labels: ["Injuries", "Fatalities"],
-      datasets: [
-        {
-          data: [totalInjuries, totalFatalities],
-          backgroundColor: ["#36A2EB", "#FF6384"],
-        },
-      ],
-    };
-
-    new Chart(ctx, {
-      type: "pie",
-      data: pieData,
-    });
-  }, [data]);
-
-  return <canvas ref={chartRef} />;
+  return <Pie data={chartData} />;
 };
 
 export default PieChart;
