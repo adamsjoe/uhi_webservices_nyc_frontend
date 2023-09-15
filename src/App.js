@@ -14,7 +14,7 @@ export default function App() {
   const [chosenBorough, setChosenBorough] = useState(null);
   const [summaryData, setSummaryData] = useState(null);
   const [activeYears, setActiveYears] = useState([]); // Initialize as an empty array
-  const [activeYear, setActiveYear] = useState(null);
+  const [activeYear, setActiveYear] = useState("all");
 
   useEffect(() => {
     axios
@@ -29,7 +29,8 @@ export default function App() {
 
   useEffect(() => {
     if (chosenBorough !== "NULL") {
-      if (activeYear !== null) {
+      if (activeYear !== "all") {
+        console.log("show year specific for the borough");
         axios
           .get(
             `${baseAPIURL}/historic/borough/${chosenBorough}/${activeYear}/summary`
@@ -41,6 +42,7 @@ export default function App() {
             console.error(error);
           });
       } else {
+        console.log("summary query for the borough");
         axios
           .get(`${baseAPIURL}/historic/borough/${chosenBorough}/summary`)
           .then((response) => {
@@ -50,6 +52,7 @@ export default function App() {
             console.error(error);
           });
       }
+
       axios
         .get(`${baseAPIURL}/historic/borough/${chosenBorough}/activeYears`)
         .then((response) => {
@@ -101,7 +104,7 @@ export default function App() {
               onChange={handleYearChange}
               value={activeYear}
             >
-              <option key="NULL" value="NULL">
+              <option key="all" value="all">
                 All years
               </option>
               {activeYears.map((year) => (
@@ -114,9 +117,7 @@ export default function App() {
         </div>
 
         <div className="col-md-10">
-          {chosenBorough !== "NULL" &&
-          summaryData !== null &&
-          activeYear !== "NULL" ? (
+          {chosenBorough !== "NULL" && summaryData !== null ? (
             <BarChart data={summaryData} />
           ) : (
             <p>PLACEHOLDER</p>
