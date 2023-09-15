@@ -13,6 +13,8 @@ export default function App() {
   const [boroughs, setBoroughs] = useState([]);
   const [chosenBorough, setChosenBorough] = useState(null);
   const [summaryData, setSummaryData] = useState(null);
+  const [activeYears, setActiveYears] = useState([]); // Initialize as an empty array
+  const [activeYear, setActiveYear] = useState(null);
 
   useEffect(() => {
     axios
@@ -27,22 +29,49 @@ export default function App() {
 
   useEffect(() => {
     if (chosenBorough !== "NULL") {
+      if (activeYear !== null) {
+        axios
+          .get(
+            `${baseAPIURL}/historic/borough/${chosenBorough}/${activeYear}/summary`
+          ) // Enclose activeYear in curly braces
+          .then((response) => {
+            setSummaryData(response.data);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } else {
+        axios
+          .get(`${baseAPIURL}/historic/borough/${chosenBorough}/summary`)
+          .then((response) => {
+            setSummaryData(response.data);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
       axios
-        .get(`${baseAPIURL}/historic/borough/${chosenBorough}/summary`)
+        .get(`${baseAPIURL}/historic/borough/${chosenBorough}/activeYears`)
         .then((response) => {
-          setSummaryData(response.data);
+          setActiveYears(response.data);
         })
         .catch((error) => {
           console.error(error);
         });
     } else {
       setSummaryData(null); // Reset summaryData if "None" is selected
+      setActiveYears([]); // Reset activeYears if "None" is selected
     }
-  }, [chosenBorough]); // Include chosenBorough as a dependency
+  }, [chosenBorough, activeYear]); // Include activeYear as a dependency
 
-  const handleSelectChange = (event) => {
+  const handleBoroughChange = (event) => {
     const selectedBorough = event.target.value;
     setChosenBorough(selectedBorough);
+  };
+
+  const handleYearChange = (event) => {
+    const selectedYear = event.target.value;
+    setActiveYear(selectedYear);
   };
 
   return (
@@ -54,7 +83,7 @@ export default function App() {
           Select a borough from the list below:
           <select
             className="boroughSelector"
-            onChange={handleSelectChange}
+            onChange={handleBoroughChange}
             value={chosenBorough}
           >
             <option key="NULL" value="NULL">
@@ -66,10 +95,28 @@ export default function App() {
               </option>
             ))}
           </select>
+          {chosenBorough !== "NULL" && (
+            <select
+              className="boroughSelector"
+              onChange={handleYearChange}
+              value={activeYear}
+            >
+              <option key="NULL" value="NULL">
+                All years
+              </option>
+              {activeYears.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div className="col-md-10">
-          {chosenBorough !== "NULL" && summaryData !== null ? (
+          {chosenBorough !== "NULL" &&
+          summaryData !== null &&
+          activeYear !== "NULL" ? (
             <BarChart data={summaryData} />
           ) : (
             <p>PLACEHOLDER</p>
