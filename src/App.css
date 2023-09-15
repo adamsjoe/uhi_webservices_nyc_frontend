@@ -20,6 +20,7 @@ body {
 .boroughSelector {
   background-color: #f5f5f5;
   color: #333333;
+  width: 150px;
 }
 
 /* .boroughSelector option {
