@@ -91,7 +91,7 @@ export default function App() {
             value={chosenBorough}
           >
             <option key="NULL" value="NULL">
-              Pick from me :)
+              Select borough
             </option>
             {boroughs.map((borough) => (
               <option key={borough} value={borough}>

@@ -38,9 +38,14 @@ body {
 
 /* Footer Stye */
 .footer {
-  position: absolute;
+  position: fixed;
   left: 0;
   bottom: 0;
   right: 0;
   background-color: #c1c9cc;
+}
+
+#fatalitiesPie {
+  width: auto;
+  height: 50%;
 }
