@@ -5,8 +5,10 @@ import Chart from "chart.js/auto"; // unused, but need this included or "linear"
 const BarChart = ({ data }) => {
   // Extract data for the chart
   //   const labels = data.map((item) => `${item.year}-${item.month}`);
-  const labels = data.map((item) => `${item.month}-${item.year}`);
+  const labels = data.map((item) => `${item.MONTH}-${item.YEAR}`);
   const numColsData = data.map((item) => item.NUM_COLS);
+
+  //why you not showing?
   const numMotoKilled = data.map((item) => item.MOTO_KILL);
   const numCycKilled = data.map((item) => item.CYC_KILL);
   const pedKilled = data.map((item) => item.PEDS_KILL);
