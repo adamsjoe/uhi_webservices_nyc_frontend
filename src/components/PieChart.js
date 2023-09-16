@@ -15,7 +15,6 @@ function calculateInjuriesAndFatalities(data) {
   let totalPedestrianFatalities = 0;
   let totalPersonFatalities = 0;
 
-  let x = 0;
   data.forEach((item) => {
     totalCyclistsInjuries += item.CYC_INJD;
     totalMotoristInjuries += item.MOTO_INJD;
@@ -26,10 +25,6 @@ function calculateInjuriesAndFatalities(data) {
     totalMotoristFatalities += item.MOTO_KILL;
     totalPedestrianFatalities += item.PEDS_KILL;
     totalPersonFatalities += item.PERS_KILL;
-    console.log(
-      `row ${x} - item.cyc_INJD = ${item.CYC_INJD} - cyc injury = ${totalCyclistsInjuries}`
-    );
-    x++;
   });
 
   return {
