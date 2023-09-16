@@ -1,4 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+/**
+ * In the map, this is just a fluffy piece of code.  We shall show the various boroughs with a color
+ * code showing how bad they are accident wise
+ * @returns
+ */
 
 function Map() {
   return (
