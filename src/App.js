@@ -128,11 +128,11 @@ function App({ children }) {
 
           <Grid item xs={8}>
             <Typography variant="body1">
-              {!selectedDate && (
+              {/* {!selectedDate && ( // what the hell is this here for??
                 <div id="summaryBorough">
                   <BarChart data={summaryData} />
                 </div>
-              )}
+              )} */}
               {selectedDate && summaryData ? (
                 <>
                   <div id="summaryBorough">
