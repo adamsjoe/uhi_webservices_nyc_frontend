@@ -2,7 +2,7 @@ import React from "react";
 import { Line } from "react-chartjs-2";
 
 const TemperatureLineChart = ({ data }) => {
-  const labels = data.map((item) => `${item.MONTH}-${item.YEAR}`);
+  const labels = data.map((item) => `${item.DAY}-${item.MONTH}-${item.YEAR}`);
   const temp = data.map((item) => item.TEMP);
   const maxTemp = data.map((item) => item.MAX);
   const minTemp = data.map((item) => item.MIN);
