@@ -40,7 +40,6 @@ function calculateInjuriesAndFatalities(data) {
 }
 
 const PieChart = ({ data }) => {
-  console.log(`the data ${data}`, JSON.stringify(data));
   const {
     totalCyclistsInjuries,
     totalMotoristInjuries,
