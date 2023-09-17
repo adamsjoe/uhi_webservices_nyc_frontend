@@ -9,6 +9,7 @@ import {
   Button,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
+import { InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -20,27 +21,35 @@ import "./App.css";
 import Map from "./components/Map";
 import BarsLoader from "./components/BarsLoader";
 import BarChart from "./components/BarChart";
+import RainBarChart from "./components/RainBarChart";
+import TemperatureLineChart from "./components/TemperatureLine";
+import WindSpeedScatter from "./components/WindSpeedScatter";
+import FogPieChart from "./components/FogPieChart";
 import PieChart from "./components/PieChart";
+import Datablock from "./components/Datablock";
 import Footer from "./components/Footer";
 
 const baseAPIURL = "http://localhost:4000";
 
 function App({ children }) {
-  // holds the latest and earlies data in the db
-  const [earliestDate, setEarliestDate] = useState(null);
-  const [latestDate, setLatestDate] = useState(null);
-  // holds the date we select
-  const [selectedDate, setSelectedDate] = useState(null);
-  // track if the modal is open
-  const [openModal, setOpenModal] = useState(false);
+  const [boroughs, setBoroughs] = useState([]); // this stores the list of boroughs
+  const [selectedBorough, setSelectedBorough] = useState("MANHATTAN"); // this is the borough selected by the dropdown
+  const [earliestDate, setEarliestDate] = useState(null); // holds the latest and earliest data in the db
+  const [latestDate, setLatestDate] = useState(null); // holds the date we select
+  const [selectedDate, setSelectedDate] = useState(null); // holds the date we picked on the datepicker
+  const [openModal, setOpenModal] = useState(false); // track if the modal is open
 
   // will need the dates in a number format for use with the API, so let's set these up
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
-  const [selectedDay, setSelectedDay] = useState(null);
+  // const [selectedDay, setSelectedDay] = useState(null);
 
   // holds the data
   const [summaryData, setSummaryData] = useState(null);
+
+  const handleBoroughChange = (event) => {
+    setSelectedBorough(event.target.value);
+  };
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -52,9 +61,20 @@ function App({ children }) {
       // the date is in range of what we have available quickly, so let's retrieve it
       setSelectedMonth(date.month() + 1); // Month is 0-based, so add 1
       setSelectedYear(date.year());
-      setSelectedDay(date.date());
+      // setSelectedDay(date.date());
     }
   };
+
+  useEffect(() => {
+    axios
+      .get(baseAPIURL + "/historic/boroughs")
+      .then((response) => {
+        setBoroughs(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   useEffect(() => {
     axios
@@ -81,13 +101,14 @@ function App({ children }) {
   useEffect(() => {
     if (
       selectedYear !== null &&
-      selectedMonth !== null &&
-      selectedDay !== null
+      selectedMonth !== null
+      // selectedDay !== null
     ) {
       axios
         .get(
           baseAPIURL +
-            `/historic/borough/MANHATTAN/${selectedYear}/${selectedMonth}/${selectedDay}`
+            // `/historic/borough/${selectedBorough}/${selectedYear}/${selectedMonth}/${selectedDay}`
+            `/historic/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
         )
         .then((response) => {
           setSummaryData(response.data);
@@ -96,7 +117,7 @@ function App({ children }) {
           console.error(error);
         });
     }
-  }, [selectedDay, selectedMonth, selectedYear]);
+  }, [selectedMonth, selectedYear]);
 
   // Render a loading message if earliestDate is still null
   if (earliestDate === null) {
@@ -116,14 +137,40 @@ function App({ children }) {
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={4}>
-            Please select a date using the picker:
-            <div className="datePicker">
-              <DatePicker
-                minDate={dayjs(earliestDate)}
-                value={selectedDate}
-                onChange={handleDateChange}
-              />
+            <div className="boroughSelector">
+              {/* <InputLabel id="boroughSelectLabel">
+                Select a borough from the dropdown:
+              </InputLabel> */}
+              <Select
+                // labelId="boroughSelectLabel"
+                label="Selected"
+                value={selectedBorough}
+                onChange={handleBoroughChange}
+              >
+                {boroughs.map((borough) => (
+                  <MenuItem key={borough} value={borough}>
+                    {borough}
+                  </MenuItem>
+                ))}
+              </Select>
             </div>
+            {selectedBorough.length > 0 && (
+              <>
+                <div className="datePicker">
+                  <DatePicker
+                    inputFormat="yyyy-MM"
+                    views={["year", "month"]}
+                    label="Month and Year"
+                    minDate={dayjs(earliestDate)}
+                    value={selectedDate}
+                    onChange={handleDateChange}
+                    renderInput={(params) => (
+                      <TextField {...params} helperText={null} />
+                    )}
+                  />
+                </div>
+              </>
+            )}
           </Grid>
 
           <Grid item xs={8}>
@@ -140,6 +187,21 @@ function App({ children }) {
                   </div>
                   <div id="fatalitiesPie">
                     <PieChart data={summaryData} />
+                  </div>
+                  <div id="datablock">
+                    <Datablock data={summaryData} />
+                  </div>
+                  <div id="rainSummary">
+                    <RainBarChart data={summaryData} />
+                  </div>
+                  <div id="1">
+                    <TemperatureLineChart data={summaryData} />
+                  </div>
+                  <div id="2">
+                    <WindSpeedScatter data={summaryData} />
+                  </div>
+                  <div id="3">
+                    <FogPieChart data={summaryData} />
                   </div>
                 </>
               ) : (
