@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogTitle,
   Button,
+  IconButton,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { InputLabel, MenuItem, Select, TextField } from "@mui/material";
@@ -117,7 +118,7 @@ function App({ children }) {
           console.error(error);
         });
     }
-  }, [selectedMonth, selectedYear]);
+  }, [selectedBorough, selectedMonth, selectedYear]);
 
   // Render a loading message if earliestDate is still null
   if (earliestDate === null) {
@@ -130,79 +131,101 @@ function App({ children }) {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Container maxWidth="lg">
+      <Container maxWidth="x1">
         <Typography variant="h4" gutterBottom>
           <div className="heading">New York Accident Data visualiser</div>
           <hr></hr>
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={4}>
-            <div className="boroughSelector">
-              {/* <InputLabel id="boroughSelectLabel">
-                Select a borough from the dropdown:
-              </InputLabel> */}
-              <Select
-                // labelId="boroughSelectLabel"
-                label="Selected"
-                value={selectedBorough}
-                onChange={handleBoroughChange}
-              >
-                {boroughs.map((borough) => (
-                  <MenuItem key={borough} value={borough}>
-                    {borough}
-                  </MenuItem>
-                ))}
-              </Select>
+          <Grid item xs={3}>
+            <div className="selectorContainer">
+              <div className="boroughSelector">
+                <InputLabel id="boroughSelectLabel">
+                  Select a borough from the dropdown:
+                </InputLabel>
+                <Select
+                  // labelId="boroughSelectLabel"
+                  label="Selected"
+                  value={selectedBorough}
+                  onChange={handleBoroughChange}
+                >
+                  {boroughs.map((borough) => (
+                    <MenuItem key={borough} value={borough}>
+                      {borough}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+              {selectedBorough.length > 0 && (
+                <>
+                  <div className="datePicker">
+                    <DatePicker
+                      inputFormat="yyyy-MM"
+                      views={["year", "month"]}
+                      label="Month and Year"
+                      minDate={dayjs(earliestDate)}
+                      value={selectedDate}
+                      onChange={handleDateChange}
+                      renderInput={(params) => (
+                        <TextField {...params} helperText={null} />
+                      )}
+                    />
+                  </div>
+                </>
+              )}
             </div>
-            {selectedBorough.length > 0 && (
-              <>
-                <div className="datePicker">
-                  <DatePicker
-                    inputFormat="yyyy-MM"
-                    views={["year", "month"]}
-                    label="Month and Year"
-                    minDate={dayjs(earliestDate)}
-                    value={selectedDate}
-                    onChange={handleDateChange}
-                    renderInput={(params) => (
-                      <TextField {...params} helperText={null} />
-                    )}
-                  />
-                </div>
-              </>
-            )}
           </Grid>
 
-          <Grid item xs={8}>
+          <Grid item xs={9}>
             <Typography variant="body1">
-              {/* {!selectedDate && ( // what the hell is this here for??
-                <div id="summaryBorough">
-                  <BarChart data={summaryData} />
-                </div>
-              )} */}
               {selectedDate && summaryData ? (
                 <>
-                  <div id="summaryBorough">
-                    <BarChart data={summaryData} />
-                  </div>
-                  <div id="fatalitiesPie">
-                    <PieChart data={summaryData} />
-                  </div>
                   <div id="datablock">
                     <Datablock data={summaryData} />
                   </div>
-                  <div id="rainSummary">
-                    <RainBarChart data={summaryData} />
-                  </div>
-                  <div id="1">
-                    <TemperatureLineChart data={summaryData} />
-                  </div>
-                  <div id="2">
-                    <WindSpeedScatter data={summaryData} />
-                  </div>
-                  <div id="3">
-                    <FogPieChart data={summaryData} />
-                  </div>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
+                      <div
+                        id="summaryBorough"
+                        style={{ width: "100%", height: "400px" }}
+                      >
+                        <BarChart data={summaryData} />
+                      </div>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <div
+                        id="rainSummary"
+                        style={{ width: "100%", height: "400px" }}
+                      >
+                        <RainBarChart data={summaryData} />
+                      </div>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <div
+                        id="tempData"
+                        style={{ width: "100%", height: "400px" }}
+                      >
+                        <TemperatureLineChart data={summaryData} />
+                      </div>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <div
+                        id="windSpeed"
+                        style={{ width: "100%", height: "400px" }}
+                      >
+                        <WindSpeedScatter data={summaryData} />
+                      </div>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <div
+                        id="fogChart"
+                        style={{ width: "100%", height: "400px" }}
+                      >
+                        <FogPieChart data={summaryData} />
+                      </div>
+                    </Grid>
+                    {/* Add more charts or components here */}
+                  </Grid>
                 </>
               ) : (
                 <div>No data available</div>
@@ -227,6 +250,7 @@ function App({ children }) {
           Close
         </Button>
       </Dialog>
+      <Footer />
     </LocalizationProvider>
   );
 }
