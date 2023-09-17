@@ -7,7 +7,6 @@ import {
   DialogContent,
   DialogTitle,
   Button,
-  IconButton,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { InputLabel, MenuItem, Select, TextField } from "@mui/material";
@@ -26,7 +25,6 @@ import RainBarChart from "./components/RainBarChart";
 import TemperatureLineChart from "./components/TemperatureLine";
 import WindSpeedScatter from "./components/WindSpeedScatter";
 import FogPieChart from "./components/FogPieChart";
-import PieChart from "./components/PieChart";
 import Datablock from "./components/Datablock";
 import Footer from "./components/Footer";
 
