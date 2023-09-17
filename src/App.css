@@ -44,3 +44,10 @@ body {
 .loading svg rect {
   fill: red;
 }
+
+.selectorContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
