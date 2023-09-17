@@ -5,7 +5,7 @@ import Chart from "chart.js/auto"; // unused, but need this included or "linear"
 const RainBarChart = ({ data }) => {
   // Extract data for the chart
   //   const labels = data.map((item) => `${item.year}-${item.month}`);
-  const labels = data.map((item) => `${item.MONTH}-${item.YEAR}`);
+  const labels = data.map((item) => `${item.DAY}-${item.MONTH}-${item.YEAR}`);
   const rain = data.map((item) => item.PRCP);
 
   // Chart data configuration
