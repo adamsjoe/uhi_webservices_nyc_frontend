@@ -15,6 +15,7 @@ const BarChart = ({ data }) => {
 
   // Chart data configuration
   const chartData = {
+    title: "hello",
     labels: labels,
     datasets: [
       {
