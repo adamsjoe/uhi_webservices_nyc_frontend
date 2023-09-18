@@ -25,6 +25,7 @@ import RainBarChart from "./components/RainBarChart";
 import TemperatureLineChart from "./components/TemperatureLine";
 import WindSpeedScatter from "./components/WindSpeedScatter";
 import FogPieChart from "./components/FogPieChart";
+import TimeSeriesLineChart from "./components/TimeSeriesLineChart";
 import Datablock from "./components/Datablock";
 import Footer from "./components/Footer";
 
@@ -62,6 +63,11 @@ function App({ children }) {
       setSelectedYear(date.year());
       // setSelectedDay(date.date());
     }
+  };
+
+  const collatedAvailableDates = {
+    first: earliestDate,
+    last: latestDate,
   };
 
   useEffect(() => {
@@ -178,9 +184,11 @@ function App({ children }) {
             <Typography variant="body1">
               {selectedDate && summaryData ? (
                 <>
-                  <div id="datablock">
-                    <Datablock data={summaryData} />
-                  </div>
+                  <Grid xs={12} md={12}>
+                    <div id="datablock">
+                      <Datablock data={summaryData} />
+                    </div>
+                  </Grid>
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>
                       <div
@@ -198,6 +206,7 @@ function App({ children }) {
                         <RainBarChart data={summaryData} />
                       </div>
                     </Grid>
+
                     <Grid item xs={12} md={6}>
                       <div
                         id="tempData"
@@ -214,6 +223,15 @@ function App({ children }) {
                         <WindSpeedScatter data={summaryData} />
                       </div>
                     </Grid>
+
+                    <Grid item xs={12} md={6}>
+                      <div
+                        id="fogTime"
+                        style={{ width: "100%", height: "400px" }}
+                      >
+                        <TimeSeriesLineChart data={summaryData} />
+                      </div>
+                    </Grid>
                     <Grid item xs={12} md={6}>
                       <div
                         id="fogChart"
@@ -222,7 +240,6 @@ function App({ children }) {
                         <FogPieChart data={summaryData} />
                       </div>
                     </Grid>
-                    {/* Add more charts or components here */}
                   </Grid>
                 </>
               ) : (
@@ -248,7 +265,7 @@ function App({ children }) {
           Close
         </Button>
       </Dialog>
-      <Footer />
+      <Footer data={collatedAvailableDates} />
     </LocalizationProvider>
   );
 }
