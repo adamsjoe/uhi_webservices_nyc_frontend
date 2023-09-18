@@ -1,11 +1,16 @@
 import React from "react";
 
-function Footer() {
+const Footer = ({ data }) => {
   return (
     <div className="footer">
-      &copy; some words in here to make it look better
+      <b>
+        Student Submission
+        <span className="last-collated-date">
+          FIRST COLLATED DATE: {data.first} LAST COLLATED DATE: {data.last}
+        </span>{" "}
+      </b>
     </div>
   );
-}
+};
 
 export default Footer;
