@@ -27,11 +27,6 @@ body {
   background-color: #c1c9cc;
 }
 
-#fatalitiesPie {
-  width: auto;
-  height: 50%;
-}
-
 .loading {
   position: absolute;
   top: 50%;
@@ -50,4 +45,9 @@ body {
   flex-direction: column;
   gap: 16px;
   width: 100%;
+}
+
+.last-collated-date {
+  float: right;
+  margin-right: 20px;
 }
