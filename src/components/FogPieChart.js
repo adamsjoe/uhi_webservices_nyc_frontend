@@ -5,7 +5,7 @@ import { Pie } from "react-chartjs-2";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const FogPieChart = ({ data }) => {
-  // get the elements where fog === 1 or fog === -
+  // get the elements where fog === 1 or fog === 0
   const noFog = data.filter((item) => item.FOG === 0).length;
   const fogPresent = data.filter((item) => item.FOG === 1).length;
 
@@ -32,15 +32,7 @@ const FogPieChart = ({ data }) => {
     ],
   };
 
-  return (
-    <Pie
-      data={chartData}
-      key={Math.random()}
-      width={"50px"}
-      // height={"50px"}
-      // options={{ maintainAspectRatio: true }}
-    />
-  );
+  return <Pie data={chartData} key={Math.random()} />;
 };
 
 export default FogPieChart;
