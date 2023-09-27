@@ -44,6 +44,9 @@ function App({ children }) {
   const [selectedYear, setSelectedYear] = useState(null);
   // const [selectedDay, setSelectedDay] = useState(null);
 
+  // loading state for the live data endpoint - which is a tad slow
+  const [isLoadingLiveData, setIsLoadingLiveData] = useState(false);
+
   // holds the data
   const [summaryData, setSummaryData] = useState(null);
 
@@ -51,17 +54,41 @@ function App({ children }) {
     setSelectedBorough(event.target.value);
   };
 
-  const handleDateChange = (date) => {
+  const handleDateChange = async (date) => {
     setSelectedDate(date);
+
+    // Check if selected date is after the latestDate, and decide whether to fetch live or historic data
     if (date && latestDate && date.isAfter(latestDate)) {
-      // Check if selected date is after the latestDate, we will use this to determine which endpoint to hit,
-      // for now, display a dialog
-      setOpenModal(true);
+      if (!isLoadingLiveData) {
+        // Set isLoadingLiveData to true when fetching live data
+        setIsLoadingLiveData(true);
+
+        // Fetch live data
+        try {
+          const response = await axios.get(
+            baseAPIURL +
+              `/liveData/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
+          );
+          setSummaryData(response.data);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          // Close the modal and set isLoadingLiveData to false
+          setOpenModal(false);
+          setIsLoadingLiveData(false);
+        }
+      }
     } else {
-      // the date is in range of what we have available quickly, so let's retrieve it
-      setSelectedMonth(date.month() + 1); // Month is 0-based, so add 1
-      setSelectedYear(date.year());
-      // setSelectedDay(date.date());
+      // Fetch historic data
+      try {
+        const response = await axios.get(
+          baseAPIURL +
+            `/historic/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
+        );
+        setSummaryData(response.data);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -104,25 +131,48 @@ function App({ children }) {
   }, []);
 
   useEffect(() => {
-    if (
-      selectedYear !== null &&
-      selectedMonth !== null
-      // selectedDay !== null
-    ) {
-      axios
-        .get(
-          baseAPIURL +
-            // `/historic/borough/${selectedBorough}/${selectedYear}/${selectedMonth}/${selectedDay}`
-            `/historic/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
-        )
-        .then((response) => {
-          setSummaryData(response.data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    // Ensure selectedYear and selectedMonth are not null
+    if (selectedYear !== null && selectedMonth !== null) {
+      // Check if selected date is after the latestDate
+      if (selectedDate && latestDate && selectedDate.isAfter(latestDate)) {
+        // Set isLoadingLiveData to true while fetching /liveData
+        setIsLoadingLiveData(true);
+      } else {
+        // Set isLoadingLiveData to false since we're not fetching /liveData
+        setIsLoadingLiveData(false);
+      }
+
+      // Fetch data based on the selected date
+      if (openModal === true) {
+        // this is the data which is outside the mongo stored data
+        axios
+          .get(
+            baseAPIURL +
+              `/liveData/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
+          )
+          .then((response) => {
+            setSummaryData(response.data);
+            setIsLoadingLiveData(false); // Data has been fetched, set isLoadingLiveData to false
+          })
+          .catch((error) => {
+            console.error(error);
+            setIsLoadingLiveData(false); // Error occurred, set isLoadingLiveData to false
+          });
+      } else {
+        axios
+          .get(
+            baseAPIURL +
+              `/historic/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
+          )
+          .then((response) => {
+            setSummaryData(response.data);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
     }
-  }, [selectedBorough, selectedMonth, selectedYear]);
+  }, [selectedBorough, selectedMonth, selectedYear, selectedDate, openModal]);
 
   // Render a loading message if earliestDate is still null
   if (earliestDate === null) {
@@ -137,7 +187,7 @@ function App({ children }) {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container maxWidth="x1">
         <Typography variant="h4" gutterBottom>
-          <div className="heading">New York Accident Data visualiser</div>
+          <div className="heading">New York Accident Data visualizer</div>
           <hr></hr>
         </Typography>
         <Grid container spacing={3}>
@@ -148,7 +198,6 @@ function App({ children }) {
                   Select a borough from the dropdown:
                 </InputLabel>
                 <Select
-                  // labelId="boroughSelectLabel"
                   label="Selected"
                   value={selectedBorough}
                   onChange={handleBoroughChange}
@@ -182,7 +231,13 @@ function App({ children }) {
 
           <Grid item xs={9}>
             <Typography variant="body1">
-              {selectedDate && summaryData ? (
+              {isLoadingLiveData ? (
+                <div className="loading">
+                  {/* You can customize this loading indicator */}
+                  <BarsLoader />
+                  <p>Loading live data...</p>
+                </div>
+              ) : selectedDate && summaryData ? (
                 <>
                   <Grid xs={12} md={12}>
                     <div id="datablock">
@@ -206,7 +261,6 @@ function App({ children }) {
                         <RainBarChart data={summaryData} />
                       </div>
                     </Grid>
-
                     <Grid item xs={12} md={6}>
                       <div
                         id="tempData"
@@ -223,7 +277,6 @@ function App({ children }) {
                         <WindSpeedScatter data={summaryData} />
                       </div>
                     </Grid>
-
                     <Grid item xs={12} md={6}>
                       <div
                         id="fogTime"
@@ -261,9 +314,6 @@ function App({ children }) {
           <br />
           <br /> Hang on
         </DialogContent>
-        <Button onClick={() => setOpenModal(false)} color="primary">
-          Close
-        </Button>
       </Dialog>
       <Footer data={collatedAvailableDates} />
     </LocalizationProvider>
