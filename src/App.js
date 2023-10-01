@@ -8,6 +8,7 @@ import {
   DialogTitle,
   Button,
 } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
 import { DatePicker } from "@mui/x-date-pickers";
 import { InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -54,42 +55,9 @@ function App() {
 
   // handle changing the date - this is where we decide which endpoint to hit
   const handleDateChange = async (date) => {
-    // const resetDate = () => {
-    //   setSelectedYear(null);
-    //   setSelectedMonth(null);
-    // };
-    // resetDate();
-
     setSelectedDate(date);
-
-    if (date && latestDate && date.isAfter(latestDate)) {
-      // Check if selected date is after the latestDate, we will use this to determine which endpoint to hit,
-      // for now, display a dialog
-      // setOpenModal(true);
-      setLookForLiveData(true);
-      try {
-        console.log(`borough is ${selectedBorough}`);
-        console.log(`year is ${selectedYear}`);
-        console.log(`month is ${selectedMonth}`);
-        console.log(`look for live data? true`);
-
-        // Fetch live data immediately
-        console.log("Fetching live data...");
-        const response = await axios.get(
-          baseAPIURL +
-            `/liveData/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
-        );
-        console.log(`respose is ${response.data}`);
-        setSummaryData(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      // the date is in range of what we have available quickly, so let's retrieve it
-      setSelectedMonth(date.month() + 1); // Month is 0-based, so add 1
-      setSelectedYear(date.year());
-    }
-    setLookForLiveData(false);
+    setSelectedMonth(date.month() + 1); // Month is 0-based, so add 1
+    setSelectedYear(date.year());
   };
 
   const collatedAvailableDates = {
@@ -128,51 +96,6 @@ function App() {
     });
   }, []);
 
-  // this is our main place for data!
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (
-          selectedYear !== null &&
-          selectedMonth !== null &&
-          lookForLiveData
-        ) {
-          console.log(`borough is ${selectedBorough}`);
-          console.log(`year is ${selectedYear}`);
-          console.log(`month is ${selectedMonth}`);
-          console.log(`look for live data? ${lookForLiveData}`);
-
-          // // Fetch live data only if lookForLiveData is true
-          // console.log("we are looking for live data");
-          // const response = await axios.get(
-          //   baseAPIURL +
-          //     `/liveData/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
-          // );
-          // setSummaryData(response.data);
-          // setLookForLiveData(false);
-        } else if (selectedYear !== null && selectedMonth !== null) {
-          // Fetch historic data if lookForLiveData is false
-          console.log("we are looking for historic data");
-          const response = await axios.get(
-            baseAPIURL +
-              `/historic/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
-          );
-          setSummaryData(response.data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchData();
-  }, [
-    lookForLiveData,
-    selectedBorough,
-    selectedMonth,
-    selectedYear,
-    selectedDate,
-  ]);
-
   // Render a loading message if earliestDate is still null
   if (earliestDate === null) {
     return (
@@ -181,6 +104,34 @@ function App() {
       </div>
     );
   }
+
+  const handleFetchingData = async () => {
+    console.log("fetch data");
+    if (selectedDate && latestDate && selectedDate.isAfter(latestDate)) {
+      console.log("we will use live data");
+      setOpenModal(true);
+      const response = await axios
+        .get(
+          baseAPIURL +
+            `/liveData/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
+        )
+        .then((response) => {
+          // Hide the modal after the data is fetched
+          setOpenModal(false);
+          setSummaryData(response.data);
+        });
+    } else {
+      console.log("we will use historic data");
+      const response = await axios
+        .get(
+          baseAPIURL +
+            `/historic/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
+        )
+        .then((response) => {
+          setSummaryData(response.data);
+        });
+    }
+  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -218,18 +169,21 @@ function App() {
                       label="Month and Year"
                       minDate={dayjs(earliestDate)}
                       value={selectedDate}
-                      onChange={(date) => {
-                        setSelectedMonth(null);
-                        setSelectedYear(null);
-                        if (date && date.year && date.month) {
-                          // Both year and month are selected, now you can call handleDateChange
-                          handleDateChange(date);
-                        }
-                      }}
+                      onChange={handleDateChange}
                       renderInput={(params) => (
                         <TextField {...params} helperText={null} />
                       )}
                     />
+                  </div>
+                  <div className="getData">
+                    <Button
+                      variant="outlined"
+                      endIcon={<SendIcon />}
+                      disabled={selectedMonth === null} // disable if month is not set
+                      onClick={handleFetchingData}
+                    >
+                      Get Data
+                    </Button>
                   </div>
                 </>
               )}
@@ -317,9 +271,6 @@ function App() {
           <br />
           <br /> Hang on
         </DialogContent>
-        <Button onClick={() => setOpenModal(false)} color="primary">
-          Close
-        </Button>
       </Dialog>
       <Footer data={collatedAvailableDates} />
     </LocalizationProvider>
