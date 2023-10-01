@@ -6,7 +6,7 @@ const Footer = ({ data }) => {
       <b>
         Student Submission
         <span className="last-collated-date">
-          FIRST COLLATED DATE: {data.first} LAST COLLATED DATE: {data.last}
+          First collated date: {data.first} Last collated date: {data.last}
         </span>{" "}
       </b>
     </div>
