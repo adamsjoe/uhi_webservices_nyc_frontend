@@ -53,7 +53,8 @@ function Datablock({ data }) {
   const fatalityRate = (totalFatalities / totalCollisions) * 100;
   return (
     <>
-      During {translateMonth(data[0].MONTH)}, {data[0].YEAR} there were: <br />
+      During {translateMonth(data[0].MONTH)}, {data[0].YEAR} in{" "}
+      {data[0].BOROUGH} there were: <br />
       <ul>
         <li>
           A total of <b>{totalCollisions}</b> Collisions.
