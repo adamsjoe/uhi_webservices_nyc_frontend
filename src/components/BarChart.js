@@ -4,7 +4,7 @@ import Chart from "chart.js/auto"; // unused, but need this included or "linear"
 
 const BarChart = ({ data }) => {
   // Extract data for the chart
-  const labels = data.map((item) => `${item.MONTH}-${item.YEAR}`);
+  const labels = data.map((item) => `${item.DAY}-${item.MONTH}-${item.YEAR}`);
   const numColsData = data.map((item) => item.NUM_COLS);
   const temp = data.map((item) => item.TEMP);
 
