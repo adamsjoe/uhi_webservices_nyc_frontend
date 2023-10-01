@@ -30,7 +30,7 @@ import Footer from "./components/Footer";
 
 const baseAPIURL = "http://localhost:4000";
 
-function App({ children }) {
+function App() {
   const [boroughs, setBoroughs] = useState([]); // this stores the list of boroughs
   const [selectedBorough, setSelectedBorough] = useState("MANHATTAN"); // this is the borough selected by the dropdown, use MANHATTAN as default
   const [earliestDate, setEarliestDate] = useState(null); // holds the earliest date in the mongo db
@@ -43,7 +43,6 @@ function App({ children }) {
   // will need the month and year in a number format for use with the API, so let's set these up
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
-  // const [selectedDay, setSelectedDay] = useState(null);
 
   // holds the data
   const [summaryData, setSummaryData] = useState(null);
@@ -54,7 +53,13 @@ function App({ children }) {
   };
 
   // handle changing the date - this is where we decide which endpoint to hit
-  const handleDateChange = (date) => {
+  const handleDateChange = async (date) => {
+    // const resetDate = () => {
+    //   setSelectedYear(null);
+    //   setSelectedMonth(null);
+    // };
+    // resetDate();
+
     setSelectedDate(date);
 
     if (date && latestDate && date.isAfter(latestDate)) {
@@ -62,11 +67,29 @@ function App({ children }) {
       // for now, display a dialog
       // setOpenModal(true);
       setLookForLiveData(true);
+      try {
+        console.log(`borough is ${selectedBorough}`);
+        console.log(`year is ${selectedYear}`);
+        console.log(`month is ${selectedMonth}`);
+        console.log(`look for live data? true`);
+
+        // Fetch live data immediately
+        console.log("Fetching live data...");
+        const response = await axios.get(
+          baseAPIURL +
+            `/liveData/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
+        );
+        console.log(`respose is ${response.data}`);
+        setSummaryData(response.data);
+      } catch (error) {
+        console.error(error);
+      }
     } else {
       // the date is in range of what we have available quickly, so let's retrieve it
       setSelectedMonth(date.month() + 1); // Month is 0-based, so add 1
       setSelectedYear(date.year());
     }
+    setLookForLiveData(false);
   };
 
   const collatedAvailableDates = {
@@ -81,78 +104,67 @@ function App({ children }) {
   }, [selectedDate]);
 
   useEffect(() => {
-    axios
-      .get(baseAPIURL + "/historic/boroughs")
-      .then((response) => {
-        setBoroughs(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
+    // Define an array of API endpoints to fetch data from
+    const endpoints = [
+      "/historic/boroughs",
+      "/historic/getMinDate",
+      "/historic/getMaxDate",
+    ];
 
-  useEffect(() => {
-    axios
-      .get(baseAPIURL + "/historic/getMinDate")
-      .then((response) => {
-        setEarliestDate(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
+    // Define an array to store the corresponding state setters
+    const stateSetters = [setBoroughs, setEarliestDate, setLatestDate];
 
-  useEffect(() => {
-    axios
-      .get(baseAPIURL + "/historic/getMaxDate")
-      .then((response) => {
-        setLatestDate(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    // Loop through the endpoints and make API requests
+    endpoints.forEach((endpoint, index) => {
+      axios
+        .get(baseAPIURL + endpoint)
+        .then((response) => {
+          // Use the appropriate state setter based on the index
+          stateSetters[index](response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    });
   }, []);
 
   // this is our main place for data!
   useEffect(() => {
-    if (selectedYear !== null && selectedMonth !== null) {
-      console.log(`borough is ${selectedBorough}`);
-      console.log(`year is ${selectedYear}`);
-      console.log(`month is ${selectedMonth}`);
-      console.log(`look for live data? ${lookForLiveData}`);
+    const fetchData = async () => {
+      try {
+        if (
+          selectedYear !== null &&
+          selectedMonth !== null &&
+          lookForLiveData
+        ) {
+          console.log(`borough is ${selectedBorough}`);
+          console.log(`year is ${selectedYear}`);
+          console.log(`month is ${selectedMonth}`);
+          console.log(`look for live data? ${lookForLiveData}`);
 
-      if (lookForLiveData === true) {
-        // we need to call the live endpoint
-        console.log("we are looking for live data");
-        axios
-          .get(
-            baseAPIURL +
-              `/liveData/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
-          )
-          .then((response) => {
-            setSummaryData(response.data);
-            // setOpenModal(false);
-            setLookForLiveData(false);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      } else {
-        // this is easy, we call the mongo db endpoint
-        console.log("we are looking for historic data");
-        axios
-          .get(
+          // // Fetch live data only if lookForLiveData is true
+          // console.log("we are looking for live data");
+          // const response = await axios.get(
+          //   baseAPIURL +
+          //     `/liveData/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
+          // );
+          // setSummaryData(response.data);
+          // setLookForLiveData(false);
+        } else if (selectedYear !== null && selectedMonth !== null) {
+          // Fetch historic data if lookForLiveData is false
+          console.log("we are looking for historic data");
+          const response = await axios.get(
             baseAPIURL +
               `/historic/borough/${selectedBorough}/${selectedYear}/${selectedMonth}`
-          )
-          .then((response) => {
-            setSummaryData(response.data);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+          );
+          setSummaryData(response.data);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    }
+    };
+
+    fetchData();
   }, [
     lookForLiveData,
     selectedBorough,
@@ -206,7 +218,14 @@ function App({ children }) {
                       label="Month and Year"
                       minDate={dayjs(earliestDate)}
                       value={selectedDate}
-                      onChange={handleDateChange}
+                      onChange={(date) => {
+                        setSelectedMonth(null);
+                        setSelectedYear(null);
+                        if (date && date.year && date.month) {
+                          // Both year and month are selected, now you can call handleDateChange
+                          handleDateChange(date);
+                        }
+                      }}
                       renderInput={(params) => (
                         <TextField {...params} helperText={null} />
                       )}
