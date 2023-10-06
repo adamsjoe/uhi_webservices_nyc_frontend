@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Bar } from "react-chartjs-2";
 import Chart from "chart.js/auto"; // unused, but need this included or "linear" won't be recognised as a valid scale - google fu for this
+import BarChartModal from "./BarChartModal";
 
 const BarChart = ({ data }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [clickedData, setClickedData] = useState(null);
+
   // Extract data for the chart
   const labels = data.map((item) => `${item.DAY}-${item.MONTH}-${item.YEAR}`);
   const numColsData = data.map((item) => item.NUM_COLS);
@@ -117,16 +121,40 @@ const BarChart = ({ data }) => {
   const chartOptions = {
     scales: {
       y: {
-        beginAtZero: true, // Start y-axis at 0 for the first dataset
+        beginAtZero: true,
         title: {
           display: true,
-          text: "Count", // Y-axis label for the first dataset
+          text: "Count",
         },
       },
     },
+    onClick: (event, elements) => {
+      if (elements && elements.length > 0) {
+        // const datasetIndex = elements[0].datasetIndex;
+        // const dataIndex = elements[0].index;
+        // const clickedData = data[dataIndex];
+
+        // console.log("Clicked Data:", clickedData);
+        const dataIndex = elements[0].index;
+        const clickedData = data[dataIndex];
+
+        setClickedData(clickedData);
+        setModalOpen(true);
+      }
+    },
   };
 
-  return <Bar data={chartData} options={chartOptions} />;
+  return (
+    <>
+      <Bar data={chartData} options={chartOptions} />
+
+      <BarChartModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        clickedData={clickedData}
+      />
+    </>
+  );
 };
 
 export default BarChart;
