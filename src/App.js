@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogTitle,
   Button,
+  Switch,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -32,6 +33,7 @@ import Footer from "./components/Footer";
 const baseAPIURL = "http://localhost:4000";
 
 function App() {
+  const [mode, setMode] = useState("light"); // state for light or dark mode
   const [boroughs, setBoroughs] = useState([]); // this stores the list of boroughs
   const [selectedBorough, setSelectedBorough] = useState("MANHATTAN"); // this is the borough selected by the dropdown, use MANHATTAN as default
   const [earliestDate, setEarliestDate] = useState(null); // holds the earliest date in the mongo db
@@ -40,6 +42,13 @@ function App() {
   const [openModal, setOpenModal] = useState(false); // track if the modal is open
 
   const [lookForLiveData, setLookForLiveData] = useState(false); // do we need to go look for live data?
+
+  const darkModeLabel = { inputProps: { "aria-label": "Switch demo" } };
+
+  // toggle between light and dark mode
+  const toggleMode = () => {
+    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+  };
 
   // will need the month and year in a number format for use with the API, so let's set these up
   const [selectedMonth, setSelectedMonth] = useState(null);
@@ -71,8 +80,8 @@ function App() {
     setSelectedDate(selectedDate);
   }, [selectedDate]);
 
+  // these all have an empty dependancy array, so we can call them together
   useEffect(() => {
-    // Define an array of API endpoints to fetch data from
     const endpoints = [
       "/historic/boroughs",
       "/historic/getMinDate",
@@ -95,6 +104,18 @@ function App() {
         });
     });
   }, []);
+
+  // Use the mode to change styling
+  useEffect(() => {
+    // Apply styling based on the selected mode
+    if (mode === "dark") {
+      // Apply dark mode styling
+      document.body.classList.add("dark-mode");
+    } else {
+      // Apply light mode styling
+      document.body.classList.remove("dark-mode");
+    }
+  }, [mode]);
 
   // Render a loading message if earliestDate is still null
   if (earliestDate === null) {
@@ -136,6 +157,10 @@ function App() {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container maxWidth="x1">
+        <Switch {...darkModeLabel} onChange={toggleMode} />
+        <Button onClick={toggleMode} variant="outlined" color="primary">
+          Toggle Mode
+        </Button>
         <Typography variant="h4" gutterBottom>
           <div className="heading">New York Accident Data visualiser</div>
           <hr></hr>
