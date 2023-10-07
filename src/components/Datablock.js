@@ -1,5 +1,4 @@
 import React from "react";
-import { translateDay } from "../helpers/translateDay";
 import { translateMonth } from "../helpers/translateMonth";
 
 function Datablock({ data }) {
