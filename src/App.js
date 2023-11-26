@@ -46,7 +46,7 @@ function App() {
 
   const darkTheme = createTheme({
     palette: {
-      mode: "dark",
+      mode: "light",
     },
   });
 
@@ -151,6 +151,7 @@ function App() {
             <div className="heading">New York Accident Data visualiser</div>
             <hr></hr>
           </Typography>
+
           <Grid container spacing={3}>
             <Grid item xs={3}>
               <div className="selectorContainer">
@@ -171,6 +172,7 @@ function App() {
                     ))}
                   </Select>
                 </div>
+
                 {selectedBorough.length > 0 && (
                   <>
                     <div className="datePicker">
@@ -186,6 +188,7 @@ function App() {
                         )}
                       />
                     </div>
+
                     <div className="getData">
                       <Button
                         variant="outlined"
