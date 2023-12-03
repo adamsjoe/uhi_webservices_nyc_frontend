@@ -32,7 +32,8 @@ import TimeSeriesLineChart from "./components/graphs/TimeSeriesLineChart";
 import Datablock from "./components/Datablock";
 import Footer from "./components/navbars/Footer";
 
-const baseAPIURL = "http://localhost:4000";
+const baseAPIURL =
+  "http://webapp-uhi-msc-19000170-webservices.azurewebsites.net";
 
 function App() {
   const [boroughs, setBoroughs] = useState([]); // this stores the list of boroughs
